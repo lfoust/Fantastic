@@ -24,6 +24,8 @@
         private const string ApiVersion = "3";
         private const string GetItemByIdUrlFormat = BaseTmdbApiUrl + ApiVersion + "/{0}/{1}";
         private const string SearchUrl = BaseTmdbApiUrl + ApiVersion + "/search/{0}";
+        private const string GetSeasonUrl = BaseTmdbApiUrl + ApiVersion + "/tv/{0}/season/{1}";
+        private const string GetEpisodeUrl = BaseTmdbApiUrl + ApiVersion + "/tv/{0}/season/{1}/episode/{2}";
 
         private readonly HttpClient client;
         private readonly IOptionsMonitor<TheMovieDbOptions> options;
@@ -48,7 +50,46 @@
             return await SearchMethod<SearchContainer<SearchTv>>("tv", query, page, cancellationToken: cancellationToken).ConfigureAwait(false);
         }
 
-        private Task<T> SearchMethod<T>(string method, string query, int page, string? language = null, bool? includeAdult = null, int year = 0, string? dateFormat = null, CancellationToken cancellationToken = default) where T : new()
+        public Task<Season> GetSeason(int id, int season, string? language = null, CancellationToken cancellationToken = default)
+        {
+            string url = string.Format(GetSeasonUrl, id, season);
+
+            var param = new Dictionary<string, string>
+            {
+                { "api_key", options.CurrentValue.ApiKey }
+            };
+
+            language = language ?? options.CurrentValue.DefaultLanguage;
+            if (!string.IsNullOrWhiteSpace(language))
+            {
+                param.Add("language", NormalizeLanguage(language));
+            }
+
+            var newUrl = new Uri(QueryHelpers.AddQueryString(url, param));
+            return MakeRequest<Season>(newUrl.ToString(), cancellationToken);
+        }
+
+        public Task<Episode> GetEpisode(int id, int season, int episode, string? language = null, CancellationToken cancellationToken = default)
+        {
+            string url = string.Format(GetEpisodeUrl, id, season, episode);
+
+            var param = new Dictionary<string, string>
+            {
+                { "api_key", options.CurrentValue.ApiKey }
+            };
+
+            language = language ?? options.CurrentValue.DefaultLanguage;
+            if (!string.IsNullOrWhiteSpace(language))
+            {
+                param.Add("language", NormalizeLanguage(language));
+            }
+
+            var newUrl = new Uri(QueryHelpers.AddQueryString(url, param));
+            return MakeRequest<Episode>(newUrl.ToString(), cancellationToken);
+        }
+
+        private Task<T> SearchMethod<T>(string method, string query, int page, string? language = null, bool? includeAdult = null, int year = 0, string? dateFormat = null, CancellationToken cancellationToken = default) 
+            where T : new()
         {
             var url = string.Format(SearchUrl, method);
 
