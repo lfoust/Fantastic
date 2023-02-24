@@ -1,16 +1,17 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>netstandard2.1</TargetFramework>
+    <TargetFrameworks>netstandard2.1;net6.0;net7.0</TargetFrameworks>
     <Nullable>enable</Nullable>
     <Authors>lfoust</Authors>
     <PackageProjectUrl>https://github.com/lfoust/Fantastic</PackageProjectUrl>
     <RepositoryUrl>https://github.com/lfoust/Fantastic</RepositoryUrl>
     <PackageLicenseFile>LICENSE</PackageLicenseFile>
+	<VersionPrefix>1.0.1</VersionPrefix>
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Microsoft.Bcl.AsyncInterfaces" Version="5.0.0" />
+    <PackageReference Include="Microsoft.Bcl.AsyncInterfaces" Version="7.0.0" />
   </ItemGroup>
 
   <ItemGroup>

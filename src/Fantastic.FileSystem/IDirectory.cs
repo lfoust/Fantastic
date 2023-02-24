@@ -15,5 +15,6 @@
         Task Delete(string path, bool recursive = false, CancellationToken cancellationToken = default);
         Task Move(string source, string destination, CancellationToken cancellationToken = default);
         Task<IDirectoryInfo> GetDirectoryInfo(string path, CancellationToken cancellationToken = default);
+        Task<IDirectoryInfo> GetParent(string path, CancellationToken cancellationToken = default);
     }
 }

@@ -19,7 +19,7 @@
     <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="7.0.0" />
     <PackageReference Include="Microsoft.Extensions.Options.ConfigurationExtensions" Version="7.0.0" />
     <PackageReference Include="System.Net.Http.Json" Version="7.0.0" />
-    <PackageReference Include="Fantastic.FileSystem" Version="1.0.0" />
+    <PackageReference Include="Fantastic.FileSystem" Version="1.0.1" />
   </ItemGroup>
 
 </Project>

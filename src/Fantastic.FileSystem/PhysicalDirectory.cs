@@ -75,5 +75,12 @@
             DirectoryInfo info = new DirectoryInfo(path);
             return Task.FromResult<IDirectoryInfo>(new DirectoryInfoWrapper(info));
         }
+
+        public Task<IDirectoryInfo> GetParent(string path, CancellationToken cancellationToken = default)
+        {
+            cancellationToken.ThrowIfCancellationRequested();
+            DirectoryInfo info = Directory.GetParent(path);
+            return Task.FromResult<IDirectoryInfo>(new DirectoryInfoWrapper(info));
+        }
     }
 }
