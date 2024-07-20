@@ -26,6 +26,7 @@
         private const string SearchUrl = BaseTmdbApiUrl + ApiVersion + "/search/{0}";
         private const string GetSeasonUrl = BaseTmdbApiUrl + ApiVersion + "/tv/{0}/season/{1}";
         private const string GetEpisodeUrl = BaseTmdbApiUrl + ApiVersion + "/tv/{0}/season/{1}/episode/{2}";
+        private const string GetMovieCreditsUrl = BaseTmdbApiUrl + ApiVersion + "/movie/{0}/credits";
 
         private readonly HttpClient client;
         private readonly IOptionsMonitor<TheMovieDbOptions> options;
@@ -151,12 +152,31 @@
 
         public async Task<Movie> GetMovie(string id, string? language = null, CancellationToken cancellationToken = default)
         {
-            return await GetItemById<Movie>(id, "movie", "casts,releases,images,keywords,trailers", language, cancellationToken).ConfigureAwait(false);
+            return await GetItemById<Movie>(id, "movie", "credits,external_ids,releases,images,keywords", language, cancellationToken).ConfigureAwait(false);
         }
 
         public async Task<Series> GetSeries(string id, string? language = null, CancellationToken cancellationToken = default)
         {
-            return await GetItemById<Series>(id, "tv", "credits,images,external_ids,keywords", language, cancellationToken).ConfigureAwait(false);
+            return await GetItemById<Series>(id, "tv", "credits,external_ids,content_ratings,keywords", language, cancellationToken).ConfigureAwait(false);
+        }
+
+        public Task<Credits> GetMovieCredits(string id, string? language = null, CancellationToken cancellationToken = default)
+        {
+            string url = string.Format(GetMovieCreditsUrl, id);
+
+            var param = new Dictionary<string, string>
+            {
+                { "api_key", options.CurrentValue.ApiKey }
+            };
+
+            language = language ?? options.CurrentValue.DefaultLanguage;
+            if (!string.IsNullOrWhiteSpace(language))
+            {
+                param.Add("language", NormalizeLanguage(language));
+            }
+
+            var newUrl = new Uri(QueryHelpers.AddQueryString(url, param));
+            return MakeRequest<Credits>(newUrl.ToString(), cancellationToken);
         }
 
         private Task<T> GetItemById<T>(string id, string urlName, string appendToResponse, string? language = null, CancellationToken cancellationToken = default)
