@@ -33,6 +33,12 @@
         private readonly IFileSystemCache cache;
         private ILogger logger;
 
+        public JsonSerializerOptions JsonSerializerOptions { get; set; } = new JsonSerializerOptions
+        {
+            WriteIndented = true,
+            TypeInfoResolver = TheMovieDbSourceGenerationContext.Default
+        };
+
         public TheMovieDbClient(HttpClient client, IOptionsMonitor<TheMovieDbOptions> options, ILoggerFactory loggerFactory, IFileSystemCache cache)
         {
             this.client = client ?? throw new ArgumentNullException(nameof(client));
@@ -135,7 +141,7 @@
             {
                 try
                 {
-                    return await response.Content.ReadFromJsonAsync<T>(cancellationToken: cancellationToken);
+                    return await response.Content.ReadFromJsonAsync<T>(options: JsonSerializerOptions, cancellationToken: cancellationToken);
                 }
                 catch (NotSupportedException notSupportedException) // When content type is not valid
                 {
