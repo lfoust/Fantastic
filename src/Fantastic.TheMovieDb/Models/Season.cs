@@ -22,7 +22,8 @@
 
         [JsonPropertyName("season_number")]
         public int SeasonNumber { get; set; }
-
+        
+        [JsonPropertyName("episodes")]
         public ICollection<Episode> Episodes { get; set; } = new List<Episode>();
     }
 }

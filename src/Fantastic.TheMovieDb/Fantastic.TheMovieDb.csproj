@@ -5,7 +5,7 @@
     <LangVersion>latest</LangVersion>
     <Nullable>enable</Nullable>
     <Authors>lfoust</Authors>
-	<VersionPrefix>1.2.0</VersionPrefix>
+	<VersionPrefix>1.2.2</VersionPrefix>
     <PackageProjectUrl>https://github.com/lfoust/Fantastic</PackageProjectUrl>
     <RepositoryUrl>https://github.com/lfoust/Fantastic</RepositoryUrl>
     <PackageLicenseExpression>Apache-2.0</PackageLicenseExpression>

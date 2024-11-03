@@ -13,6 +13,7 @@
     using Microsoft.AspNetCore.WebUtilities;
     using TheMovieDb.Models;
     using TheMovieDb.Caching.FileSystem;
+    using Fantastic.TheMovieDb.Serialization;
 
     public class TheMovieDbClient : IDisposable
     {
@@ -33,11 +34,7 @@
         private readonly IFileSystemCache cache;
         private ILogger logger;
 
-        public JsonSerializerOptions JsonSerializerOptions { get; set; } = new JsonSerializerOptions
-        {
-            WriteIndented = true,
-            TypeInfoResolver = TheMovieDbSourceGenerationContext.Default
-        };
+        public JsonSerializerOptions JsonSerializerOptions { get; set; } = SerializationHelper.JsonSerializerOptions;
 
         public TheMovieDbClient(HttpClient client, IOptionsMonitor<TheMovieDbOptions> options, ILoggerFactory loggerFactory, IFileSystemCache cache)
         {

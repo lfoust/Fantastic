@@ -5,6 +5,7 @@
     using System.Threading;
     using System.Threading.Tasks;
     using Fantastic.FileSystem;
+    using Fantastic.TheMovieDb.Serialization;
 
     public class FileSystemCache : IFileSystemCache
     {
@@ -37,7 +38,7 @@
                 var data = await fileSystem.File.ReadAllBytes(cachePath);
                 if (data.Length > 0)
                 {
-                    var item = JsonSerializer.Deserialize<T>(data);
+                    var item = JsonSerializer.Deserialize<T>(data, SerializationHelper.JsonSerializerOptions);
                     return item;
                 }
                 else
@@ -51,7 +52,7 @@
             if (!Equals(newItem, default(T)))
             {
                 // write to cache
-                var data = JsonSerializer.SerializeToUtf8Bytes(newItem);
+                var data = JsonSerializer.SerializeToUtf8Bytes(newItem, SerializationHelper.JsonSerializerOptions);
                 await fileSystem.File.WriteAllBytes(cachePath, data, cancellationToken);
             }
 
