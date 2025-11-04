@@ -1,7 +1,6 @@
-﻿namespace Fantastic.TheMovieDb.Caching.FileSystem
+﻿namespace Fantastic.TheMovieDb.Caching.FileSystem;
+
+public class FileSystemCacheOptions
 {
-    public class FileSystemCacheOptions
-    {
-        public string? BaseDirectory { get; set; }
-    }
+    public string? BaseDirectory { get; set; }
 }

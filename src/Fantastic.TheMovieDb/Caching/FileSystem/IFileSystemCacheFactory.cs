@@ -1,7 +1,6 @@
-﻿namespace Fantastic.TheMovieDb.Caching.FileSystem
+﻿namespace Fantastic.TheMovieDb.Caching.FileSystem;
+
+public interface IFileSystemCacheFactory
 {
-    public interface IFileSystemCacheFactory
-    {
-        IFileSystemCache CreateCache(string name);
-    }
+    IFileSystemCache CreateCache(string name);
 }

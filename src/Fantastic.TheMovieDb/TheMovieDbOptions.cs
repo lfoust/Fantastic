@@ -1,10 +1,9 @@
-﻿namespace Fantastic.TheMovieDb
-{
-    public class TheMovieDbOptions
-    {
-        public string? ApiKey { get; set; }
+﻿namespace Fantastic.TheMovieDb;
 
-        /// <summary>ISO 639-1 code. Example: 'en'</summary>
-        public string? DefaultLanguage { get; set; }
-    }
+public class TheMovieDbOptions
+{
+    public string? ApiKey { get; set; }
+
+    /// <summary>ISO 639-1 code. Example: 'en'</summary>
+    public string? DefaultLanguage { get; set; }
 }

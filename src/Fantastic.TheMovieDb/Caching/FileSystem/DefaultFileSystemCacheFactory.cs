@@ -1,22 +1,21 @@
-﻿namespace Fantastic.TheMovieDb.Caching.FileSystem
+﻿namespace Fantastic.TheMovieDb.Caching.FileSystem;
+
+using System;
+using Fantastic.FileSystem;
+
+public class DefaultFileSystemCacheFactory : IFileSystemCacheFactory
 {
-    using System;
-    using Fantastic.FileSystem;
+    private IFileSystem fileSystem;
+    private readonly FileSystemCacheOptions options;
 
-    public class DefaultFileSystemCacheFactory : IFileSystemCacheFactory
+    public DefaultFileSystemCacheFactory(IFileSystem fileSystem, FileSystemCacheOptions options)
     {
-        private IFileSystem fileSystem;
-        private readonly FileSystemCacheOptions options;
+        this.fileSystem = fileSystem ?? throw new ArgumentNullException(nameof(fileSystem));
+        this.options = options ?? throw new ArgumentNullException(nameof(options));
+    }
 
-        public DefaultFileSystemCacheFactory(IFileSystem fileSystem, FileSystemCacheOptions options)
-        {
-            this.fileSystem = fileSystem ?? throw new ArgumentNullException(nameof(fileSystem));
-            this.options = options ?? throw new ArgumentNullException(nameof(options));
-        }
-
-        public IFileSystemCache CreateCache(string name)
-        {
-            return new FileSystemCache(name, options, fileSystem);
-        }
+    public IFileSystemCache CreateCache(string name)
+    {
+        return new FileSystemCache(name, options, fileSystem);
     }
 }
