@@ -11,12 +11,38 @@
     {
         public Task AppendAllLines(string path, IEnumerable<string> contents, Encoding encoding, CancellationToken cancellationToken = default)
         {
-            return File.AppendAllLinesAsync(path, contents, encoding, cancellationToken);
+#if NETSTANDARD2_0
+            return Task.Run(() =>
+            {
+                cancellationToken.ThrowIfCancellationRequested();
+                using (var writer = new StreamWriter(path, append: true, encoding))
+                {
+                    foreach (var line in contents)
+                    {
+                        cancellationToken.ThrowIfCancellationRequested();
+                        writer.WriteLine(line);
+                    }
+                }
+            }, cancellationToken);
+#else
+    return File.AppendAllLinesAsync(path, contents, encoding, cancellationToken);
+#endif
         }
 
         public Task AppendAllText(string path, string contents, Encoding encoding, CancellationToken cancellationToken = default)
         {
-            return File.AppendAllTextAsync(path, contents, encoding, cancellationToken);
+#if NETSTANDARD2_0
+            return Task.Run(() =>
+            {
+                cancellationToken.ThrowIfCancellationRequested();
+                using (var writer = new StreamWriter(path, append: true, encoding))
+                {
+                    writer.Write(contents);
+                }
+            }, cancellationToken);
+#else
+    return File.AppendAllTextAsync(path, contents, encoding, cancellationToken);
+#endif
         }
 
         public Task Copy(string sourceFileName, string destFileName, bool overwrite = false, CancellationToken cancellationToken = default)
@@ -97,17 +123,41 @@
 
         public Task<byte[]> ReadAllBytes(string path, CancellationToken cancellationToken = default)
         {
+#if NETSTANDARD2_0
+            return Task.Run(() =>
+            {
+                cancellationToken.ThrowIfCancellationRequested();
+                return File.ReadAllBytes(path);
+            }, cancellationToken);
+#else
             return File.ReadAllBytesAsync(path, cancellationToken);
+#endif
         }
 
         public Task<string[]> ReadAllLines(string path, Encoding encoding, CancellationToken cancellationToken = default)
         {
+#if NETSTANDARD2_0
+            return Task.Run(() =>
+            {
+                cancellationToken.ThrowIfCancellationRequested();
+                return File.ReadAllLines(path, encoding);
+            }, cancellationToken);
+#else
             return File.ReadAllLinesAsync(path, encoding, cancellationToken);
+#endif
         }
 
         public Task<string> ReadAllText(string path, Encoding encoding, CancellationToken cancellationToken = default)
         {
+#if NETSTANDARD2_0
+            return Task.Run(() =>
+            {
+                cancellationToken.ThrowIfCancellationRequested();
+                return File.ReadAllText(path, encoding);
+            }, cancellationToken);
+#else
             return File.ReadAllTextAsync(path, encoding, cancellationToken);
+#endif
         }
 
         public async IAsyncEnumerable<string> ReadLines(string path, Encoding encoding, [EnumeratorCancellation] CancellationToken cancellationToken = default)
@@ -130,22 +180,54 @@
 
         public Task WriteAllBytes(string path, byte[] bytes, CancellationToken cancellationToken = default)
         {
+#if NETSTANDARD2_0
+            return Task.Run(() =>
+            {
+                cancellationToken.ThrowIfCancellationRequested();
+                File.WriteAllBytes(path, bytes);
+            }, cancellationToken);
+#else
             return File.WriteAllBytesAsync(path, bytes, cancellationToken);
+#endif
         }
 
         public Task WriteAllLines(string path, IEnumerable<string> contents, Encoding encoding, CancellationToken cancellationToken = default)
         {
+#if NETSTANDARD2_0
+            return Task.Run(() =>
+            {
+                cancellationToken.ThrowIfCancellationRequested();
+                File.WriteAllLines(path, contents, encoding);
+            }, cancellationToken);
+#else
             return File.WriteAllLinesAsync(path, contents, encoding, cancellationToken);
+#endif
         }
 
         public Task WriteAllLines(string path, string[] contents, Encoding encoding, CancellationToken cancellationToken = default)
         {
+#if NETSTANDARD2_0
+            return Task.Run(() =>
+            {
+                cancellationToken.ThrowIfCancellationRequested();
+                File.WriteAllLines(path, contents, encoding);
+            }, cancellationToken);
+#else
             return File.WriteAllLinesAsync(path, contents, encoding, cancellationToken);
+#endif
         }
 
         public Task WriteAllText(string path, string contents, Encoding encoding, CancellationToken cancellationToken = default)
         {
+#if NETSTANDARD2_0
+            return Task.Run(() =>
+            {
+                cancellationToken.ThrowIfCancellationRequested();
+                File.WriteAllText(path, contents, encoding);
+            }, cancellationToken);
+#else
             return File.WriteAllTextAsync(path, contents, encoding, cancellationToken);
+#endif
         }
     }
 }

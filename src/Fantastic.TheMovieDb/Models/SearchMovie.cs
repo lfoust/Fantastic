@@ -2,6 +2,7 @@
 {
     using System;
     using System.Text.Json.Serialization;
+    using Fantastic.TheMovieDb.Serialization;
 
     public class SearchMovie : SearchMovieTvBase
     {
@@ -12,7 +13,8 @@
         public string? OriginalTitle { get; set; }
 
         [JsonPropertyName("release_date")]
-        public DateTime? ReleaseDate { get; set; }
+        [JsonConverter(typeof(NullableDateConverter))]
+        public DateTimeOffset? ReleaseDate { get; set; }
 
         [JsonPropertyName("title")]
         public string? Title { get; set; }

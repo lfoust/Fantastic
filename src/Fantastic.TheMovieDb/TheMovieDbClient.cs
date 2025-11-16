@@ -58,6 +58,11 @@ public class TheMovieDbClient : IDisposable
     {
         string url = string.Format(GetSeasonUrl, id, season);
 
+        if (string.IsNullOrEmpty(options.CurrentValue.ApiKey))
+        {
+            throw new InvalidOperationException("TMDB API key is not set");
+        }
+
         var param = new Dictionary<string, string>
         {
             { "api_key", options.CurrentValue.ApiKey }
@@ -76,6 +81,11 @@ public class TheMovieDbClient : IDisposable
     public Task<Episode> GetEpisode(int id, int season, int episode, string? language = null, CancellationToken cancellationToken = default)
     {
         string url = string.Format(GetEpisodeUrl, id, season, episode);
+
+        if (string.IsNullOrEmpty(options.CurrentValue.ApiKey))
+        {
+            throw new InvalidOperationException("TMDB API key is not set");
+        }
 
         var param = new Dictionary<string, string>
         {
@@ -96,6 +106,16 @@ public class TheMovieDbClient : IDisposable
         where T : new()
     {
         var url = string.Format(SearchUrl, method);
+
+        if (string.IsNullOrEmpty(options.CurrentValue.ApiKey))
+        {
+            throw new InvalidOperationException("TMDB API key is not set");
+        }
+
+        if (string.IsNullOrEmpty(query))
+        {
+            return default;
+        }
 
         var param = new Dictionary<string, string>
         {
@@ -142,11 +162,11 @@ public class TheMovieDbClient : IDisposable
             }
             catch (NotSupportedException notSupportedException) // When content type is not valid
             {
-                logger.LogError(notSupportedException, "IMDB: Content type not supported");
+                logger.LogError(notSupportedException, "TMDB: Content type not supported");
             }
             catch (JsonException invalidJsonException) // Invalid JSON
             {
-                logger.LogError(invalidJsonException, "IMDB: Invalid JSON in response");
+                throw new ResponseJsonException(invalidJsonException, url);
             }
         }
 
@@ -188,11 +208,16 @@ public class TheMovieDbClient : IDisposable
         {
             var url = string.Format(GetItemByIdUrlFormat, urlName, id);
 
+            if (string.IsNullOrEmpty(options.CurrentValue.ApiKey))
+            {
+                throw new InvalidOperationException("TMDB API key is not set");
+            }
+
             var param = new Dictionary<string, string>
-        {
-            { "api_key", options.CurrentValue.ApiKey },
-            { "append_to_response", appendToResponse }
-        };
+            {
+                { "api_key", options.CurrentValue.ApiKey },
+                { "append_to_response", appendToResponse }
+            };
 
             language = language ?? options.CurrentValue.DefaultLanguage;
             if (!string.IsNullOrWhiteSpace(language))

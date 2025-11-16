@@ -1,24 +1,26 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
-  <PropertyGroup>
-    <TargetFrameworks>netstandard2.1;net6.0;net7.0</TargetFrameworks>
-    <Nullable>enable</Nullable>
-    <Authors>lfoust</Authors>
-    <PackageProjectUrl>https://github.com/lfoust/Fantastic</PackageProjectUrl>
-    <RepositoryUrl>https://github.com/lfoust/Fantastic</RepositoryUrl>
-    <PackageLicenseFile>LICENSE</PackageLicenseFile>
-	<VersionPrefix>1.0.1</VersionPrefix>
-  </PropertyGroup>
+	<PropertyGroup>
+		<TargetFrameworks>netstandard20;net90;net10.0</TargetFrameworks>
+		<Nullable>enable</Nullable>
+		<Authors>lfoust</Authors>
+		<PackageProjectUrl>https://github.com/lfoust/Fantastic</PackageProjectUrl>
+		<RepositoryUrl>https://github.com/lfoust/Fantastic</RepositoryUrl>
+		<PackageLicenseFile>LICENSE</PackageLicenseFile>
+		<VersionPrefix>2.0.0</VersionPrefix>
+		<LangVersion>latest</LangVersion>
+	</PropertyGroup>
 
-  <ItemGroup>
-    <PackageReference Include="Microsoft.Bcl.AsyncInterfaces" Version="7.0.0" />
-  </ItemGroup>
+	<ItemGroup Condition="'$(TargetFramework)' == 'netstandard20'">
+		<PackageReference Include="Microsoft.Bcl.AsyncInterfaces" Version="7.0.0" />
+		<PackageReference Include="System.Memory" Version="4.5.4" />
+	</ItemGroup>
 
-  <ItemGroup>
-    <None Include="..\..\LICENSE">
-      <Pack>True</Pack>
-      <PackagePath></PackagePath>
-    </None>
-  </ItemGroup>
+	<ItemGroup>
+		<None Include="..\..\LICENSE">
+			<Pack>True</Pack>
+			<PackagePath></PackagePath>
+		</None>
+	</ItemGroup>
 
 </Project>

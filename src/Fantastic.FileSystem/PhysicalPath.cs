@@ -110,17 +110,59 @@
             return Path.HasExtension(path);
         }
 
-        public override string Join(ReadOnlySpan<char> path1, ReadOnlySpan<char> path2) =>
-            Path.Join(path1, path2);
+        public override string Join(ReadOnlySpan<char> path1, ReadOnlySpan<char> path2)
+        {
+#if NETSTANDARD2_0
+            // Convert spans to strings and use Path.Combine
+            return Path.Combine(path1.ToString(), path2.ToString());
+#else
+            return Path.Join(path1, path2);
+#endif
+        }
 
-        public override string Join(ReadOnlySpan<char> path1, ReadOnlySpan<char> path2, ReadOnlySpan<char> path3) =>
-            Path.Join(path1, path2, path3);
-        
-        public override bool TryJoin(ReadOnlySpan<char> path1, ReadOnlySpan<char> path2, Span<char> destination, out int charsWritten) =>
-            Path.TryJoin(path1, path2, destination, out charsWritten);
-        
-        public override bool TryJoin(ReadOnlySpan<char> path1, ReadOnlySpan<char> path2, ReadOnlySpan<char> path3, Span<char> destination, out int charsWritten) =>
-            Path.TryJoin(path1, path2, path3, destination, out charsWritten);
+        public override string Join(ReadOnlySpan<char> path1, ReadOnlySpan<char> path2, ReadOnlySpan<char> path3)
+        {
+#if NETSTANDARD2_0
+            return Path.Combine(path1.ToString(), path2.ToString(), path3.ToString());
+#else
+            return Path.Join(path1, path2, path3);
+#endif
+        }
+
+        public override bool TryJoin(ReadOnlySpan<char> path1, ReadOnlySpan<char> path2, Span<char> destination, out int charsWritten)
+        {
+#if NETSTANDARD2_0
+            // Fallback: Use Path.Combine and copy to destination
+            var combined = Path.Combine(path1.ToString(), path2.ToString());
+            if (combined.Length > destination.Length)
+            {
+                charsWritten = 0;
+                return false;
+            }
+            combined.AsSpan().CopyTo(destination);
+            charsWritten = combined.Length;
+            return true;
+#else
+            return Path.TryJoin(path1, path2, destination, out charsWritten);
+#endif
+        }
+
+        public override bool TryJoin(ReadOnlySpan<char> path1, ReadOnlySpan<char> path2, ReadOnlySpan<char> path3, Span<char> destination, out int charsWritten)
+        {
+#if NETSTANDARD2_0
+            var combined = Path.Combine(path1.ToString(), path2.ToString(), path3.ToString());
+            if (combined.Length > destination.Length)
+            {
+                charsWritten = 0;
+                return false;
+            }
+            combined.AsSpan().CopyTo(destination);
+            charsWritten = combined.Length;
+            return true;
+#else
+            return Path.TryJoin(path1, path2, path3, destination, out charsWritten);
+#endif
+        }
 
         public override bool IsPathRooted(string path)
         {
