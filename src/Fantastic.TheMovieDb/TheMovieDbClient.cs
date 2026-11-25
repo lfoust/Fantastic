@@ -150,27 +150,20 @@ public class TheMovieDbClient : IDisposable
 
     private async Task<T> MakeRequest<T>(string url, CancellationToken cancellationToken = default)
     {
-        var request = new HttpRequestMessage(HttpMethod.Get, url);
+        using var request = new HttpRequestMessage(HttpMethod.Get, url);
         request.Headers.Accept.Add(new MediaTypeWithQualityHeaderValue(AcceptHeader));
 
-        var response = await client.SendAsync(request, HttpCompletionOption.ResponseHeadersRead);
-        if (response.IsSuccessStatusCode)
-        {
-            try
-            {
-                return await response.Content.ReadFromJsonAsync<T>(options: JsonSerializerOptions, cancellationToken: cancellationToken);
-            }
-            catch (NotSupportedException notSupportedException) // When content type is not valid
-            {
-                logger.LogError(notSupportedException, "TMDB: Content type not supported");
-            }
-            catch (JsonException invalidJsonException) // Invalid JSON
-            {
-                throw new ResponseJsonException(invalidJsonException, url);
-            }
-        }
+        using var response = await client.SendAsync(request, HttpCompletionOption.ResponseHeadersRead, cancellationToken);
+        response.EnsureSuccessStatusCode();
 
-        return default;
+        try
+        {
+            return await response.Content.ReadFromJsonAsync<T>(options: JsonSerializerOptions, cancellationToken: cancellationToken);
+        }
+        catch (JsonException invalidJsonException) // Invalid JSON
+        {
+            throw new ResponseJsonException(invalidJsonException, url);
+        }
     }
 
     public async Task<Movie> GetMovie(string id, string? language = null, CancellationToken cancellationToken = default)
@@ -204,7 +197,12 @@ public class TheMovieDbClient : IDisposable
 
     private Task<T?> GetItemById<T>(string id, string urlName, string appendToResponse, string? language = null, CancellationToken cancellationToken = default)
     {
-        return cache.TryGet(id, async () =>
+        language ??= options.CurrentValue.DefaultLanguage;
+        string cacheKey = string.IsNullOrWhiteSpace(language)
+            ? $"{urlName}-{id}"
+            : $"{urlName}-{id}-{NormalizeLanguage(language)}";
+
+        return cache.TryGet(cacheKey, async () =>
         {
             var url = string.Format(GetItemByIdUrlFormat, urlName, id);
 
@@ -219,7 +217,6 @@ public class TheMovieDbClient : IDisposable
                 { "append_to_response", appendToResponse }
             };
 
-            language = language ?? options.CurrentValue.DefaultLanguage;
             if (!string.IsNullOrWhiteSpace(language))
             {
                 param.Add("language", NormalizeLanguage(language));

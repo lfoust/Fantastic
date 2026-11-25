@@ -14,12 +14,21 @@ public class InMemoryFileSystemCache : IFileSystemCache
         this.cache = cache ?? throw new ArgumentNullException(nameof(cache));
     }
 
-    public Task<T?> TryGet<T>(string cacheKey, Func<Task<T>> refresh, CancellationToken cancellationToken)
+    public async Task<T?> TryGet<T>(string cacheKey, Func<Task<T>> refresh, CancellationToken cancellationToken)
     {
-        return this.cache.GetOrCreateAsync(cacheKey, async entry =>
+        cancellationToken.ThrowIfCancellationRequested();
+        if (this.cache.TryGetValue<T>(cacheKey, out var cached) && cached is not null)
         {
-            entry.AbsoluteExpirationRelativeToNow = TimeSpan.FromHours(10);
-            return await refresh();
-        });
+            return cached;
+        }
+
+        var value = await refresh();
+        cancellationToken.ThrowIfCancellationRequested();
+        if (value is not null)
+        {
+            this.cache.Set(cacheKey, value, TimeSpan.FromHours(10));
+        }
+
+        return value;
     }
 }
